@@ -29,6 +29,18 @@ app.use(
   })
 );
 
+const { GoogleGenerativeAI } = require("@google/generative-ai");
+require("dotenv").config();
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+async function generate(prompt) {
+  const result = await model.generateContent(prompt);
+  const response = await result.response;
+  const text = response.text();
+  return text;
+}
+
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -50,16 +62,6 @@ app.get("/", (req, res) => {
     root: __dirname,
   });
 });
-
-// function to capitalize text
-function capital(textSound) {
-  const arr = textSound.split(" ");
-  for (var i = 0; i < arr.length; i++) {
-    arr[i] = arr[i].charAt(0).toUpperCase() + arr[i].slice(1);
-  }
-  const str = arr.join(" ");
-  return str;
-}
 
 const store = makeInMemoryStore({
   logger: pino().child({ level: "silent", stream: "store" }),
@@ -160,18 +162,13 @@ async function connectToWhatsApp() {
         const noWa = messages[0].key.remoteJid;
 
         await sock.readMessages([messages[0].key]);
-        const pesanMasuk = pesan.toLowerCase();
 
-        if (!messages[0].key.fromMe && pesanMasuk === "ping") {
+        // Check if the message contains '.bot'
+        if (pesan.includes(".bot")) {
+          const response = await generate(pesan);
           await sock.sendMessage(
             noWa,
-            { text: "Pong" },
-            { quoted: messages[0] }
-          );
-        } else {
-          await sock.sendMessage(
-            noWa,
-            { text: "Saya adalah Bot!" },
+            { text: response },
             { quoted: messages[0] }
           );
         }
