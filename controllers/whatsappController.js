@@ -92,7 +92,7 @@ const connectToWhatsApp = async () => {
       await sock.readMessages([messages[0].key]);
 
       // Check if the message contains '.bot'
-      if (pesan.includes(".bot")) {
+      if (pesan.includes("/bot")) {
         const response = await generate(pesan);
         await sock.sendMessage(
           noWa,
