@@ -133,13 +133,13 @@ async function connectToWhatsApp() {
       }
     } else if (connection === "open") {
       console.log("opened connection");
-      let getGroups = await sock.groupFetchAllParticipating();
-      let groups = Object.values(await sock.groupFetchAllParticipating());
-      for (let group of groups) {
-        console.log(
-          "id_group: " + group.id + " || Nama Group: " + group.subject
-        );
-      }
+      //   let getGroups = await sock.groupFetchAllParticipating();
+      //   let groups = Object.values(await sock.groupFetchAllParticipating());
+      //   for (let group of groups) {
+      //     console.log(
+      //       "id_group: " + group.id + " || Nama Group: " + group.subject
+      //     );
+      //   }
       return;
     }
     if (update.qr) {
